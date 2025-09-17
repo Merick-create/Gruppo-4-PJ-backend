@@ -2,16 +2,15 @@ import { ContoCorrenteModel } from "../Conto-Corrente/conto-corrente-model";
 import { MovimentiModel } from "./movimenti-model";
 import { LogModel } from "../log/log-model";
 import { BonificoDto } from "../Bonfico/bonifico-dto";
-import { CategorieMovimentiModel } from './movimenti-model';
 import { Parser } from 'json2csv';
 
 export const getUltimiMovimenti = async (n: number) => {
-  const movimenti = await CategorieMovimentiModel.find()
+  const movimenti = await MovimentiModel.find()
     .sort({ data: -1 })
     .limit(n)
     .exec();
 
-  const saldoAgg = await CategorieMovimentiModel.aggregate([
+  const saldoAgg = await MovimentiModel.aggregate([
     { $group: { _id: null, saldo: { $sum: '$importo' } } }
   ]);
 
@@ -21,7 +20,7 @@ export const getUltimiMovimenti = async (n: number) => {
 };
 
 export const getUltimiMovimentiByCategoria = async (n: number, categoria: string) => {
-  const movimenti = await CategorieMovimentiModel.find({ nomeCategoria: categoria })
+  const movimenti = await MovimentiModel.find({ nomeCategoria: categoria })
     .sort({ data: -1 })
     .limit(n)
     .exec();
@@ -34,7 +33,7 @@ export const getUltimiMovimentiByDateRange = async (
   dataInizio: Date,
   dataFine: Date
 ) => {
-  const movimenti = await CategorieMovimentiModel.find({
+  const movimenti = await MovimentiModel.find({
     data: { $gte: dataInizio, $lte: dataFine }
   })
     .sort({ data: -1 })
@@ -45,7 +44,7 @@ export const getUltimiMovimentiByDateRange = async (
 };
 
 export const esportaMovimenti = async (movimenti?: any[]) => {
-  const data = movimenti ?? (await CategorieMovimentiModel.find().sort({ data: -1 }).lean());
+  const data = movimenti ?? (await MovimentiModel.find().sort({ data: -1 }).lean());
 
   const parser = new Parser({ fields: ['data', 'importo', 'nomeCategoria'] });
   const csv = parser.parse(data);
