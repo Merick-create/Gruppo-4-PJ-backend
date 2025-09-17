@@ -31,7 +31,7 @@ export const esportaMovimenti = async (movimenti?: any[]): Promise<Buffer> => {
 
 export const getUltimiMovimenti = async (n: number) => {
   const movimenti = await MovimentiModel.find()
-    .sort({ data: -1 })
+    .sort({ dataCreazione: -1 })
     .limit(n)
     .exec();
 
@@ -46,7 +46,7 @@ export const getUltimiMovimenti = async (n: number) => {
 
 export const getUltimiMovimentiByCategoria = async (n: number, categoria: string) => {
   const movimenti = await MovimentiModel.find({ nomeCategoria: categoria })
-    .sort({ data: -1 })
+    .sort({ dataCreazione: -1 })
     .limit(n)
     .exec();
 
@@ -59,7 +59,7 @@ export const getUltimiMovimentiByDateRange = async (
   dataFine: Date
 ) => {
   const movimenti = await MovimentiModel.find({
-    data: { $gte: dataInizio, $lte: dataFine }
+    dataCreazione: { $gte: dataInizio, $lte: dataFine }
   })
     .sort({ data: -1 })
     .limit(n)
