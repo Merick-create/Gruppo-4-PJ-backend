@@ -3,7 +3,31 @@ import { MovimentiModel } from "./movimenti-model";
 import { LogModel } from "../log/log-model";
 import { BonificoDto } from "../Bonfico/bonifico-dto";
 import { RicaricaDto } from "../Ricarica-dto/ricarica-dto";
-import { Parser } from 'json2csv';
+import { format } from '@fast-csv/format';
+import { Writable } from 'stream';
+
+export const esportaMovimenti = async (movimenti?: any[]): Promise<Buffer> => {
+  const data = movimenti ?? (await MovimentiModel.find().sort({ data: -1 }).lean());
+
+  return new Promise((resolve, reject) => {
+    const bufferChunks: Buffer[] = [];
+    const writableStream = new Writable({
+      write(chunk, encoding, callback) {
+        bufferChunks.push(Buffer.from(chunk));
+        callback();
+      }
+    });
+
+    const csvStream = format({ headers: true });
+    csvStream.pipe(writableStream)
+      .on('finish', () => resolve(Buffer.concat(bufferChunks)))
+      .on('error', err => reject(err));
+
+    data.forEach(row => csvStream.write(row));
+    csvStream.end();
+  });
+};
+
 
 export const getUltimiMovimenti = async (n: number) => {
   const movimenti = await MovimentiModel.find()
@@ -35,23 +59,15 @@ export const getUltimiMovimentiByDateRange = async (
   dataFine: Date
 ) => {
   const movimenti = await MovimentiModel.find({
-    data: { $gte: dataInizio, $lte: dataFine }
+    dataCreazione: { $gte: dataInizio, $lte: dataFine }
   })
-    .sort({ dataCreazione: -1 })
+    .sort({ data: -1 })
     .limit(n)
     .exec();
 
   return movimenti;
 };
 
-export const esportaMovimenti = async (movimenti?: any[]) => {
-  const data = movimenti ?? (await MovimentiModel.find().sort({ dataCreazione: -1 }).lean());
-
-  const parser = new Parser({ fields: ['dataCreazione', 'importo', 'nomeCategoria'] });
-  const csv = parser.parse(data);
-
-  return Buffer.from(csv, 'utf-8');
-};
 export async function eseguiBonifico(bonificoDto: BonificoDto, ip?: string) {
   try {
     const contoMittente = await ContoCorrenteModel.findOne({

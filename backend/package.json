@@ -19,6 +19,7 @@
     "class-validator": "^0.14.1",
     "cors": "^2.8.5",
     "express": "^4.21.2",
+    "fast-csv": "^5.0.5",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "mongoose": "^8.10.1",
