@@ -1,5 +1,5 @@
 export type ContoCorrente={
-    id:string;
+    id?:string;
     cognomeTitolare:string;
     nomeTitolare:string;
     dataApertura:Date;
