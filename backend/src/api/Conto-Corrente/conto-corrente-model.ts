@@ -18,5 +18,8 @@ ContoCorrenteSchema.set('toJSON',{
     }
 });
 
+ContoCorrenteSchema.virtual('fullname').get(function () {
+  return  `${this.nomeTitolare} ${this.cognomeTitolare}`;;
+});
 
 export const ContoCorrenteModel= model<ContoCorrente>('ContoCorrente',ContoCorrenteSchema);
