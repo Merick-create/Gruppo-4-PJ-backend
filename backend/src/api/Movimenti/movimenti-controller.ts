@@ -3,6 +3,9 @@ import { getUltimiMovimenti, esportaMovimenti, getUltimiMovimentiByCategoria, ge
 import { QueryMovimentiDTO, QueryMovimentiCategoriaDTO, QueryMovimentiDateRangeDTO } from './movimenti-dto';
 import { TypedRequest } from '../../lib/typed-request-interface';
 import { NotFoundError } from '../../error/not-found-error';
+import { eseguiBonifico, eseguiRicarica } from "./movimenti-service"; 
+import { BonificoDto } from "../Bonfico/bonifico-dto";
+import { RicaricaDto } from "../Ricarica-dto/ricarica-dto";
 
 
 export const RicercaMov1 = async (
@@ -86,3 +89,31 @@ export const exportMovimenti = async (
     next(err);
   }
 };
+
+
+export const bonifico= async (req: Request, res: Response) => {
+  try {
+    const dto: BonificoDto = req.body;
+
+    const result = await eseguiBonifico(dto, req.ip);
+
+    res.status(200).json(result);
+  } catch (error: any) {
+    res.status(400).json({
+      message: error.message || "Errore durante il bonifico",
+    });
+  }
+};
+
+export const ricarica= async (req: Request, res: Response) => {
+  try {
+    const dto: RicaricaDto = req.body;
+
+    const result = await eseguiRicarica(dto, req.ip);
+
+    res.status(200).json(result);
+  } catch (error: any) {
+    res.status(400).json({ message: error.message || "Errore ricarica" });
+  }
+};
+

@@ -2,6 +2,7 @@ import { ContoCorrenteModel } from "../Conto-Corrente/conto-corrente-model";
 import { MovimentiModel } from "./movimenti-model";
 import { LogModel } from "../log/log-model";
 import { BonificoDto } from "../Bonfico/bonifico-dto";
+import { RicaricaDto } from "../Ricarica-dto/ricarica-dto";
 import { Parser } from 'json2csv';
 
 export const getUltimiMovimenti = async (n: number) => {
@@ -51,7 +52,6 @@ export const esportaMovimenti = async (movimenti?: any[]) => {
 
   return Buffer.from(csv, 'utf-8');
 };
-
 export async function eseguiBonifico(bonificoDto: BonificoDto, ip?: string) {
   try {
     const contoMittente = await ContoCorrenteModel.findOne({
@@ -66,7 +66,6 @@ export async function eseguiBonifico(bonificoDto: BonificoDto, ip?: string) {
       throw new Error("IBAN non valido");
     }
 
-    // Controllo saldo mittente
     const saldoMittente = await getSaldoConto(contoMittente.id);
     if (saldoMittente < bonificoDto.importo) {
       await logOperazione(ip, "Bonifico fallito: saldo insufficiente", false);
@@ -116,3 +115,38 @@ export async function logOperazione(
     descrizione: `${descrizione} - ${successo ? "Successo" : "Fallimento"}`,
   });
 }
+export async function eseguiRicarica(dto: RicaricaDto, ip?: string) {
+  try {
+    const conto = await ContoCorrenteModel.findById(dto.contoid);
+
+    if (!conto) {
+      await logOperazione(ip, "Ricarica fallita: conto non trovato", false);
+      throw new Error("Conto non trovato");
+    }
+
+    const saldoDisponibile = await getSaldoConto(conto.id);
+    if (saldoDisponibile < dto.importo) {
+      await logOperazione(ip, "Ricarica fallita: saldo insufficiente", false);
+      throw new Error("Saldo insufficiente");
+    }
+    await MovimentiModel.create({
+      ContoCorrenteId: conto.id,
+      importo: -dto.importo,
+      dataCreazione: new Date(),
+      descrizione: `Ricarica ${dto.operatore} numero ${dto.numeroTelefono}`,
+      saldo: saldoDisponibile - dto.importo,
+    });
+
+    await logOperazione(
+      ip,
+      `Ricarica eseguita con successo (${dto.importo}€ su ${dto.numeroTelefono})`,
+      true
+    );
+
+    return { message: "Ricarica eseguita con successo" };
+  } catch (error) {
+    await logOperazione(ip, `Errore durante la ricarica: ${error}`, false);
+    throw error;
+  }
+}
+
