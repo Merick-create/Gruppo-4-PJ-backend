@@ -18,7 +18,6 @@ export async function eseguiBonifico(bonificoDto: BonificoDto, ip?: string) {
       throw new Error("IBAN non valido");
     }
 
-    // Controllo saldo mittente
     const saldoMittente = await getSaldoConto(contoMittente.id);
     if (saldoMittente < bonificoDto.importo) {
       await logOperazione(ip, "Bonifico fallito: saldo insufficiente", false);
