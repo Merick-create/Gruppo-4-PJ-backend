@@ -133,7 +133,7 @@ export async function logOperazione(
 }
 export async function eseguiRicarica(dto: RicaricaDto, ip?: string) {
   try {
-    const conto = await ContoCorrenteModel.findById(dto.contoid);
+    const conto = await ContoCorrenteModel.findById(dto.ContoCorrenteId);
 
     if (!conto) {
       await logOperazione(ip, "Ricarica fallita: conto non trovato", false);
