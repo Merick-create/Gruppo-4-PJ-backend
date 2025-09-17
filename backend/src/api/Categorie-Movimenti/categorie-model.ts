@@ -8,8 +8,6 @@ const CategorieMovimentiSchema = new Schema<CategorieMovimenti>({
 
 CategorieMovimentiSchema.set('toJSON',{
     transform: (_document, returnedObject) => {
-        delete returnedObject._id;
-        delete returnedObject.__v;
         return returnedObject;
     }   
 });
