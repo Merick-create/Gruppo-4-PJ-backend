@@ -7,7 +7,7 @@ const router = Router();
 router.post("/bonifico", bonifico);
 router.post("/ricarica", ricarica);
 
-router.get('/', RicercaMov1);
+router.get('/ricerca', RicercaMov1);
 router.get('/categoria', RicercaMov2);
 router.get('/date', RicercaMov3);
 router.get('/export', exportMovimenti);
