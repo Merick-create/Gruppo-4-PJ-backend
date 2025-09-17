@@ -2,11 +2,11 @@ import { Movimenti } from "./movimenti-entity";
 import { model,Schema } from "mongoose";
 
 const MovimentiSchema = new Schema<Movimenti>({
-    ContoCorrenteId: {type: String, required: true,ref: 'ContoCorrente'},
+    ContoCorrenteId: {type: Schema.Types.ObjectId, required: true,ref: 'ContoCorrente'},
     dataCreazione: {type: Date, required: true},
     importo: {type: Number, required: true},
     saldo: {type: Number, required: true},
-    CategoriaMovimentoid: {type: String, required: true, ref: 'CategorieMovimenti'},
+    CategoriaMovimentoid: {type: Schema.Types.ObjectId, required: true, ref: 'CategorieMovimenti'},
     descrizione: {type: String, required: true}
 });
 
