@@ -1,0 +1,18 @@
+import { Log } from "./log-entity";
+
+import { model,Schema } from "mongoose";
+
+const LogSchema = new Schema<Log>({
+    ip:String,
+    dateOperation:Date.now,
+    descrizione:String
+});
+
+LogSchema.set('toJSON',{
+    transform: (_document, returnedObject) => {
+        delete returnedObject._id;
+        delete returnedObject.__v;
+        return returnedObject;
+}});
+
+export const LogModel=model<Log>('Log',LogSchema);
