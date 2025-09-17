@@ -3,7 +3,7 @@ export type Movimenti={
     id:string;
     ContoCorrenteId:string;
     dataCreazione:Date;
-    impoto:number;
+    importo:number;
     saldo:number; 
     CategoriaMovimentoid:string;
     descrizione:string;
