@@ -1,13 +1,13 @@
 import { ContoCorrenteModel } from "../Conto-Corrente/conto-corrente-model";
 import { MovimentiModel } from "./movimenti-model";
-import { LogModel } from "../log/log-model";
 import { BonificoDto } from "../Bonfico/bonifico-dto";
 import { RicaricaDto } from "../Ricarica-dto/ricarica-dto";
-import { format } from '@fast-csv/format';
-import { Writable } from 'stream';
-
+import { format } from "@fast-csv/format";
+import { Writable } from "stream";
+import { addLog } from "../log/log-service";
 export const esportaMovimenti = async (movimenti?: any[]): Promise<Buffer> => {
-  const data = movimenti ?? (await MovimentiModel.find().sort({ data: -1 }).lean());
+  const data =
+    movimenti ?? (await MovimentiModel.find().sort({ data: -1 }).lean());
 
   return new Promise((resolve, reject) => {
     const bufferChunks: Buffer[] = [];
@@ -15,19 +15,19 @@ export const esportaMovimenti = async (movimenti?: any[]): Promise<Buffer> => {
       write(chunk, encoding, callback) {
         bufferChunks.push(Buffer.from(chunk));
         callback();
-      }
+      },
     });
 
     const csvStream = format({ headers: true });
-    csvStream.pipe(writableStream)
-      .on('finish', () => resolve(Buffer.concat(bufferChunks)))
-      .on('error', err => reject(err));
+    csvStream
+      .pipe(writableStream)
+      .on("finish", () => resolve(Buffer.concat(bufferChunks)))
+      .on("error", (err) => reject(err));
 
-    data.forEach(row => csvStream.write(row));
+    data.forEach((row) => csvStream.write(row));
     csvStream.end();
   });
 };
-
 
 export const getUltimiMovimenti = async (n: number) => {
   const movimenti = await MovimentiModel.find()
@@ -36,7 +36,7 @@ export const getUltimiMovimenti = async (n: number) => {
     .exec();
 
   const saldoAgg = await MovimentiModel.aggregate([
-    { $group: { _id: null, saldo: { $sum: '$importo' } } }
+    { $group: { _id: null, saldo: { $sum: "$importo" } } },
   ]);
 
   const saldo = saldoAgg.length > 0 ? saldoAgg[0].saldo : 0;
@@ -44,7 +44,10 @@ export const getUltimiMovimenti = async (n: number) => {
   return { movimenti, saldo };
 };
 
-export const getUltimiMovimentiByCategoria = async (n: number, categoria: string) => {
+export const getUltimiMovimentiByCategoria = async (
+  n: number,
+  categoria: string
+) => {
   const movimenti = await MovimentiModel.find({ nomeCategoria: categoria })
     .sort({ dataCreazione: -1 })
     .limit(n)
@@ -59,15 +62,14 @@ export const getUltimiMovimentiByDateRange = async (
   dataFine: Date
 ) => {
   const movimenti = await MovimentiModel.find({
-    dataCreazione: { $gte: dataInizio, $lte: dataFine }
+    dataCreazione: { $gte: dataInizio, $lte: dataFine },
   })
-    .sort({ data: -1 })
+    .sort({ dataCreazione: -1 })
     .limit(n)
     .exec();
 
   return movimenti;
 };
-
 export async function eseguiBonifico(bonificoDto: BonificoDto, ip?: string) {
   try {
     const contoMittente = await ContoCorrenteModel.findOne({
@@ -87,6 +89,7 @@ export async function eseguiBonifico(bonificoDto: BonificoDto, ip?: string) {
       await logOperazione(ip, "Bonifico fallito: saldo insufficiente", false);
       throw new Error("Saldo insufficiente");
     }
+
     await MovimentiModel.create({
       ContoCorrenteId: contoMittente.id,
       importo: -bonificoDto.importo,
@@ -112,25 +115,6 @@ export async function eseguiBonifico(bonificoDto: BonificoDto, ip?: string) {
   }
 }
 
-export async function getSaldoConto(contoId: string): Promise<number> {
-  const ultimoMovimento = await MovimentiModel.findOne({
-    ContoCorrenteId: contoId,
-  }).sort({ dataCreazione: -1 });
-
-  return ultimoMovimento ? ultimoMovimento.saldo : 0;
-}
-
-export async function logOperazione(
-  ip: string | undefined,
-  descrizione: string,
-  successo: boolean
-): Promise<void> {
-  await LogModel.create({
-    ip: ip ?? "unknown",
-    dateOperation: new Date(),
-    descrizione: `${descrizione} - ${successo ? "Successo" : "Fallimento"}`,
-  });
-}
 export async function eseguiRicarica(dto: RicaricaDto, ip?: string) {
   try {
     const conto = await ContoCorrenteModel.findById(dto.ContoCorrenteId);
@@ -145,6 +129,7 @@ export async function eseguiRicarica(dto: RicaricaDto, ip?: string) {
       await logOperazione(ip, "Ricarica fallita: saldo insufficiente", false);
       throw new Error("Saldo insufficiente");
     }
+
     await MovimentiModel.create({
       ContoCorrenteId: conto.id,
       importo: -dto.importo,
@@ -165,4 +150,21 @@ export async function eseguiRicarica(dto: RicaricaDto, ip?: string) {
     throw error;
   }
 }
+export async function getSaldoConto(contoId: string): Promise<number> {
+  const ultimoMovimento = await MovimentiModel.findOne({
+    ContoCorrenteId: contoId,
+  }).sort({ dataCreazione: -1 });
 
+  return ultimoMovimento ? ultimoMovimento.saldo : 0;
+}
+export async function logOperazione(
+  ip: string | undefined,
+  descrizione: string,
+  successo: boolean
+): Promise<void> {
+  await addLog({
+    ip: ip ?? "unknown",
+    dateOperation: new Date(),
+    descrizione: `${descrizione} - ${successo ? "Successo" : "Fallimento"}`,
+  });
+}
