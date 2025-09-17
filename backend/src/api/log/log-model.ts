@@ -4,7 +4,7 @@ import { model,Schema } from "mongoose";
 
 const LogSchema = new Schema<Log>({
     ip:String,
-    dateOperation:Date.now,
+    dateOperation:{ type: Date, default: Date.now },
     descrizione:String
 });
 
