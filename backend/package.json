@@ -1,0 +1,43 @@
+{
+  "name": "intro-express",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon",
+    "start": "ts-node src/index.ts",
+    "build": "tsc",
+    "gendata": "ts-node ./example-data.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "mongoose": "^8.10.1",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^9.4.0",
+    "@types/body-parser": "^1.19.5",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/morgan": "^1.9.9",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "**/*.test.ts",
+      "**/*.spec.ts",
+      "node_modules"
+    ],
+    "watch": [
+      "src"
+    ],
+    "exec": "npm start",
+    "ext": "ts"
+  }
+}
