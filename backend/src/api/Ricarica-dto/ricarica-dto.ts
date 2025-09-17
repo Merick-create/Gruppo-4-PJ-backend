@@ -1,5 +1,5 @@
 export class RicaricaDto {
-    contoid:string;
+    ContoCorrenteId:string;
     numeroTelefono:string;
     operatore:string;
     importo:number;
