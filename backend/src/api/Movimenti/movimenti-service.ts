@@ -7,7 +7,7 @@ import { Parser } from 'json2csv';
 
 export const getUltimiMovimenti = async (n: number) => {
   const movimenti = await MovimentiModel.find()
-    .sort({ data: -1 })
+    .sort({ dataCreazione: -1 })
     .limit(n)
     .exec();
 
@@ -22,7 +22,7 @@ export const getUltimiMovimenti = async (n: number) => {
 
 export const getUltimiMovimentiByCategoria = async (n: number, categoria: string) => {
   const movimenti = await MovimentiModel.find({ nomeCategoria: categoria })
-    .sort({ data: -1 })
+    .sort({ dataCreazione: -1 })
     .limit(n)
     .exec();
 
@@ -37,7 +37,7 @@ export const getUltimiMovimentiByDateRange = async (
   const movimenti = await MovimentiModel.find({
     data: { $gte: dataInizio, $lte: dataFine }
   })
-    .sort({ data: -1 })
+    .sort({ dataCreazione: -1 })
     .limit(n)
     .exec();
 
@@ -45,9 +45,9 @@ export const getUltimiMovimentiByDateRange = async (
 };
 
 export const esportaMovimenti = async (movimenti?: any[]) => {
-  const data = movimenti ?? (await MovimentiModel.find().sort({ data: -1 }).lean());
+  const data = movimenti ?? (await MovimentiModel.find().sort({ dataCreazione: -1 }).lean());
 
-  const parser = new Parser({ fields: ['data', 'importo', 'nomeCategoria'] });
+  const parser = new Parser({ fields: ['dataCreazione', 'importo', 'nomeCategoria'] });
   const csv = parser.parse(data);
 
   return Buffer.from(csv, 'utf-8');
@@ -117,7 +117,7 @@ export async function logOperazione(
 }
 export async function eseguiRicarica(dto: RicaricaDto, ip?: string) {
   try {
-    const conto = await ContoCorrenteModel.findById(dto.contoid);
+    const conto = await ContoCorrenteModel.findById(dto.ContoCorrenteId);
 
     if (!conto) {
       await logOperazione(ip, "Ricarica fallita: conto non trovato", false);
