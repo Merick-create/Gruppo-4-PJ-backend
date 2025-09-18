@@ -138,10 +138,11 @@ export async function eseguiRicarica(dto: RicaricaDto, ip?: string) {
 
     await MovimentiModel.create({
       ContoCorrenteId: conto.id,
-      importo: -dto.importo,
       dataCreazione: new Date(),
-      descrizione: `Ricarica ${dto.operatore} numero ${dto.numeroTelefono}`,
+      importo: -dto.importo,
       saldo: saldoDisponibile - dto.importo,
+      CategoriaMovimentoid: dto.CategoriaMovimentoid,
+      descrizione: `Ricarica ${dto.operatore} numero ${dto.numeroTelefono}`,
     });
 
     await logOperazione(
