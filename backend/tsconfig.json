@@ -9,6 +9,7 @@
       "forceConsistentCasingInFileNames": true,
       "noImplicitAny": false,
       "resolveJsonModule": true,
-      "strictPropertyInitialization": false
+      "strictPropertyInitialization": false,
+      "experimentalDecorators": true
     }
 }

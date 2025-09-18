@@ -1,9 +1,26 @@
-export class AddUserDTO {
-    cognomeTitolare: string;
-    nomeTitolare: string;
-    dataApertura: Date;
-    iban: string;
+import { IsDate, IsString, IsIBAN, IsStrongPassword, IsEmail } from "class-validator";
+import { Type } from "class-transformer";
 
-    username: string;
-    password: string;
+export class AddUserDTO {
+  @IsString()
+  cognomeTitolare: string;
+
+  @IsString()
+  nomeTitolare: string;
+
+  @Type(() => Date)
+  @IsDate()
+  dataApertura: Date;
+
+  @IsIBAN()
+  iban: string;
+
+  @IsEmail()
+  username: string;
+
+  @IsString()
+  @IsStrongPassword({
+    minLength: 8,
+  })
+  password: string;
 }
