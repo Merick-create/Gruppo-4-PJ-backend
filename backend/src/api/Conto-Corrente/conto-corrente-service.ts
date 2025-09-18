@@ -11,7 +11,7 @@ export class UserExistsError extends Error {
     }
 }
 
-export class UserService {
+export class    UserService {
 
     async add(user: ContoCorrente, credentials: {username: string, password: string}): Promise<ContoCorrente> {
         const existingIdentity = await UserIdentityModel.findOne({'credentials.username': credentials.username});
