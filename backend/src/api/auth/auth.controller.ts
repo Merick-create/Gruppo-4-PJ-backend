@@ -8,6 +8,7 @@ import { omit, pick } from "lodash";
 import passport from "passport";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../../lib/auth/jwt/jwt-strategy";
+import { logOperazione } from "../Movimenti/movimenti-service";
 
 const TOKEN_DUR = "1 hour";
 
@@ -23,7 +24,10 @@ export const add = async (
       dataApertura: new Date()
     }
     const credentialsData = pick(req.body, "username", "password");
+
     const newUser = await userSrv.add(UserUpd, credentialsData);
+    await logOperazione(req.ip, `Registrazione effettuata correttamente per ${credentialsData.username}`, true);
+
     res.status(201).json(newUser);
   } catch (err) {
     if (err instanceof UserExistsError) {
@@ -51,7 +55,6 @@ export const login = async (
         next(err);
         return;
       }
-
       if (!user) {
         res.status(400);
         res.json({
@@ -61,6 +64,7 @@ export const login = async (
         return;
       }
       const token = jwt.sign(user, JWT_SECRET, { expiresIn: TOKEN_DUR });
+      await logOperazione(req.ip, `${user.cognomeTitolare} ${user.nomeTitolare} ha effettuato il login dal portale`, true);
       res.status(200);
       res.json({
         user,
