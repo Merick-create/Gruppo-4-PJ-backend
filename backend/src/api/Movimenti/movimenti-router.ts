@@ -6,11 +6,11 @@ import { isAuthenticated } from "../../lib/auth/auth.middleware";
 const router = Router();
 
 router.post("/bonifico", isAuthenticated, bonifico);
-router.post("/ricarica", ricarica);
+router.post("/ricarica", isAuthenticated,ricarica);
 
-router.get('/ricerca', RicercaMov1);
-router.get('/categoria', RicercaMov2);
-router.get('/date', RicercaMov3);
-router.get('/export', exportMovimenti);
+router.get('/ricerca',isAuthenticated, RicercaMov1);
+router.get('/categoria',isAuthenticated, RicercaMov2);
+router.get('/date',isAuthenticated, RicercaMov3);
+router.get('/export',isAuthenticated, exportMovimenti);
 
 export default router;  
