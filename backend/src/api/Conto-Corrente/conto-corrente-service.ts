@@ -1,4 +1,5 @@
 import { UserIdentityModel } from "../../lib/auth/local/user-identity.model";
+import { MovimentiModel } from "../Movimenti/movimenti-model";
 import { ContoCorrente } from "./conto-corrente-entity";
 import { ContoCorrenteModel } from "./conto-corrente-model";
 import bcrypt from "bcrypt";
@@ -23,6 +24,15 @@ export class UserService {
       throw new UserExistsError();
     }
     const newUser = await ContoCorrenteModel.create(user);
+  
+    await MovimentiModel.create({
+      ContoCorrenteId: newUser._id,
+      dataCreazione: new Date(),
+      importo: 1000,
+      saldo: 1000,
+      CategoriaMovimentoid:'68cbc060e770205318d4b627',
+      descrizione: 'Saldo iniziale'
+    });
 
     const hashedPassword = await bcrypt.hash(credentials.password, 10);
 
