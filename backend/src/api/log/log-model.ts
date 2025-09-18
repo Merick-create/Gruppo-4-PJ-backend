@@ -15,4 +15,13 @@ LogSchema.set('toJSON',{
         return returnedObject;
 }});
 
+LogSchema.set('toObject', {
+    virtuals: true,
+    transform: (_, ret) => {
+        delete ret._id;
+        delete ret.__v;
+        return ret;
+    }
+});
+
 export const LogModel=model<Log>('Log',LogSchema);
