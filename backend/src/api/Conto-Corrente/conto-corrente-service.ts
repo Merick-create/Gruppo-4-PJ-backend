@@ -24,14 +24,14 @@ export class UserService {
       throw new UserExistsError();
     }
     const newUser = await ContoCorrenteModel.create(user);
-  
+
     await MovimentiModel.create({
       ContoCorrenteId: newUser._id,
       dataCreazione: new Date(),
       importo: 1000,
       saldo: 1000,
-      CategoriaMovimentoid:'68cbc060e770205318d4b627',
-      descrizione: 'Saldo iniziale'
+      CategoriaMovimentoid: "68cbc060e770205318d4b627",
+      descrizione: "Saldo iniziale",
     });
 
     const hashedPassword = await bcrypt.hash(credentials.password, 10);
@@ -46,6 +46,16 @@ export class UserService {
     });
 
     return newUser;
+  }
+
+  async updatePassword(contoId: string, updatedPassword: string) {
+    
+    const hashedPassword = await bcrypt.hash(updatedPassword, 10);
+
+    await UserIdentityModel.updateOne(
+      { user: contoId },
+      { $set: { "credentials.hashedPassword": hashedPassword } }
+    );
   }
 
   async update(
@@ -81,6 +91,7 @@ export class UserService {
 
     return updatedUser;
   }
+
   async delete(contoId: string): Promise<void> {
     await ContoCorrenteModel.findByIdAndDelete(contoId);
     await UserIdentityModel.deleteOne({ user: contoId });

@@ -22,3 +22,11 @@ export class AddUserDTO {
   })
   password: string;
 }
+
+export class UpdPsswdDTO {
+  @IsString()
+  @IsStrongPassword({
+    minLength: 8,
+  })
+  password: string;
+}
