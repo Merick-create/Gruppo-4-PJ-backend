@@ -18,8 +18,12 @@ export const add = async (
 ) => {
   try {
     const userData = omit(req.body, "username", "password");
+    const UserUpd ={
+      ...userData,
+      dataApertura: new Date()
+    }
     const credentialsData = pick(req.body, "username", "password");
-    const newUser = await userSrv.add(userData, credentialsData);
+    const newUser = await userSrv.add(UserUpd, credentialsData);
     res.status(201).json(newUser);
   } catch (err) {
     if (err instanceof UserExistsError) {
