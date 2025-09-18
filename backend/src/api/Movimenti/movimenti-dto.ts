@@ -1,8 +1,8 @@
 export class MovimentiDTO{
-    ContoCorrenteId!:string;
+    ibanMittente!:string;
+    ibanDestinatario!:string;
     dataCreazione!:Date;
     impoto!:number;
-    saldo!:number;
     CategoriaMovimentoid!:string;
     descrizione!:string;
 }
@@ -18,6 +18,6 @@ export interface QueryMovimentiCategoriaDTO {
 
 export interface QueryMovimentiDateRangeDTO {
   n: number;
-  dataInizio: string; // formato ISO
-  dataFine: string;   // formato ISO
+  dataInizio: string;
+  dataFine: string;  
 }
