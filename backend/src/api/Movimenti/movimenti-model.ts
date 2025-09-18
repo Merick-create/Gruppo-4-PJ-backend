@@ -3,7 +3,7 @@ import { model,Schema } from "mongoose";
 
 const MovimentiSchema = new Schema<Movimenti>({
     ContoCorrenteId: {type: String, required: true,ref: 'ContoCorrente'},
-    dataCreazione: {type: Date},
+    dataCreazione: {type: Date, required: true},
     importo: {type: Number, required: true},
     saldo: {type: Number},
     CategoriaMovimentoid: {type: String, required: true, ref: 'CategorieMovimenti'},

@@ -5,6 +5,8 @@ import { RicaricaDto } from "../Ricarica-dto/ricarica-dto";
 import { format } from "@fast-csv/format";
 import { Writable } from "stream";
 import { addLog } from "../log/log-service";
+import  {MovimentiDTO}  from "./movimenti-dto";
+MovimentiDTO
 export const esportaMovimenti = async (movimenti?: any[]): Promise<Buffer> => {
   const data =
     movimenti ?? (await MovimentiModel.find().sort({ data: -1 }).lean());
@@ -70,49 +72,53 @@ export const getUltimiMovimentiByDateRange = async (
 
   return movimenti;
 };
-export async function eseguiBonifico(bonificoDto: BonificoDto, ip?: string) {
+export async function eseguiBonifico(dto: MovimentiDTO, mittenteId: string, ip?: string) {
   try {
-    const contoMittente = await ContoCorrenteModel.findOne({
-      iban: bonificoDto.ibanMittente,
-    });
-    const contoDestinatario = await ContoCorrenteModel.findOne({
-      iban: bonificoDto.ibanDestinatario,
-    });
+    const contoMittente = await ContoCorrenteModel.findById(mittenteId);
+    const contoDestinatario = await ContoCorrenteModel.findOne({iban: dto.ContoCorrenteId});
+    console.log(contoDestinatario);
 
     if (!contoMittente || !contoDestinatario) {
-      await logOperazione(ip, "Bonifico fallito: IBAN non valido", false);
-      throw new Error("IBAN non valido");
+      await logOperazione(ip, "Bonifico fallito: IBAN destinatario non valido", false);
+      throw new Error("IBAN destinatario non valido");
     }
 
     const saldoMittente = await getSaldoConto(contoMittente.id);
-    if (saldoMittente < bonificoDto.importo) {
+    if (saldoMittente < dto.importo) {
       await logOperazione(ip, "Bonifico fallito: saldo insufficiente", false);
       throw new Error("Saldo insufficiente");
     }
 
     await MovimentiModel.create({
-      ContoCorrenteId: contoMittente.id,
-      importo: -bonificoDto.importo,
+      ContoCorrenteId: contoMittente.iban,
+      importo: -dto.importo,
+      saldo: saldoMittente - dto.importo,
       dataCreazione: new Date(),
-      descrizione: `Bonifico in uscita: ${bonificoDto.descrizione}`,
-      saldo: saldoMittente - bonificoDto.importo,
+      descrizione: `Bonifico in uscita: ${dto.descrizione}`,
+      CategoriaMovimentoid: dto.CategoriaMovimentoid,
     });
-
-    const saldoDestinatario = await getSaldoConto(contoDestinatario.id);
+    const saldoDest = await getSaldoConto(contoDestinatario.id);
     await MovimentiModel.create({
-      ContoCorrenteId: contoDestinatario.id,
-      importo: bonificoDto.importo,
+      ContoCorrenteId: contoDestinatario.iban,
+      importo: dto.importo,
+      saldo: saldoDest + dto.importo,
       dataCreazione: new Date(),
-      descrizione: `Bonifico in entrata: ${bonificoDto.descrizione}`,
-      saldo: saldoDestinatario + bonificoDto.importo,
+      descrizione: `Bonifico in entrata: ${dto.descrizione}`,
+      CategoriaMovimentoid: dto.CategoriaMovimentoid,
     });
 
-    await logOperazione(ip, "Bonifico eseguito con successo", true);
-    return { message: "Bonifico eseguito con successo" };
+    await logOperazione(ip, `Bonifico di ${dto.importo}€ eseguito con successo`, true);
+    return { mesxsage: "Bonifico eseguito con successo" };
   } catch (error) {
     await logOperazione(ip, `Errore durante il bonifico: ${error}`, false);
     throw error;
   }
+}
+export async function getSaldoConto(iban: string): Promise<number> {
+  const ultimoMovimento = await MovimentiModel.findOne({ ContoCorrenteId: iban })
+    .sort({ dataCreazione: -1 });
+
+  return ultimoMovimento ? ultimoMovimento.saldo : 1000;
 }
 
 export async function eseguiRicarica(dto: RicaricaDto, ip?: string) {
@@ -149,13 +155,6 @@ export async function eseguiRicarica(dto: RicaricaDto, ip?: string) {
     await logOperazione(ip, `Errore durante la ricarica: ${error}`, false);
     throw error;
   }
-}
-export async function getSaldoConto(contoId: string): Promise<number> {
-  const ultimoMovimento = await MovimentiModel.findOne({
-    ContoCorrenteId: contoId,
-  }).sort({ dataCreazione: -1 });
-
-  return ultimoMovimento ? ultimoMovimento.saldo : 0;
 }
 export async function logOperazione(
   ip: string | undefined,

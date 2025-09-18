@@ -1,8 +1,7 @@
 export class MovimentiDTO{
-    ibanMittente!:string;
-    ibanDestinatario!:string;
+    ContoCorrenteId!:string;
     dataCreazione!:Date;
-    impoto!:number;
+    importo!:number;
     CategoriaMovimentoid!:string;
     descrizione!:string;
 }

@@ -12,6 +12,7 @@ passport.use(
     async (token, done) => {
         try{
             const user = await ContoCorrenteModel.findById(token.id);
+            console.log(user);
             if(user){
                 done(null, user.toObject());
             }else{

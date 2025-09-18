@@ -93,15 +93,14 @@ export const exportMovimenti = async (
 
 export const bonifico= async (req: Request, res: Response) => {
   try {
-    const dto: BonificoDto = req.body;
+    const dto = req.body;
+    const mittenteId = req.user?.id;
+    console.log(req.user?.id);
 
-    const result = await eseguiBonifico(dto, req.ip);
-
+    const result = await eseguiBonifico(dto, mittenteId!, req.ip);
     res.status(200).json(result);
   } catch (error: any) {
-    res.status(400).json({
-      message: error.message || "Errore durante il bonifico",
-    });
+    res.status(400).json({ message: error.message || "Errore durante il bonifico" });
   }
 };
 

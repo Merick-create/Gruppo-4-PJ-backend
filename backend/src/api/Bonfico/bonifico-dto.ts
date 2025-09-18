@@ -3,4 +3,5 @@ export class BonificoDto {
     ibanDestinatario: string;
     importo: number;
     descrizione: string;
+    CategoriaMovimentoid: string;
 }

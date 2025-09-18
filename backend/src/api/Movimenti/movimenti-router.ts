@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { bonifico,exportMovimenti,ricarica,RicercaMov1, RicercaMov2, RicercaMov3 } from "./movimenti-controller";
 import { BonificoDto } from "../Bonfico/bonifico-dto";
+import { isAuthenticated } from "../../lib/auth/auth.middleware";
 
 const router = Router();
 
-router.post("/bonifico", bonifico);
+router.post("/bonifico", isAuthenticated, bonifico);
 router.post("/ricarica", ricarica);
 
 router.get('/ricerca', RicercaMov1);
