@@ -6,7 +6,6 @@ import { format } from "@fast-csv/format";
 import { Writable } from "stream";
 import { addLog } from "../log/log-service";
 import  {MovimentiDTO}  from "./movimenti-dto";
-MovimentiDTO
 export const esportaMovimenti = async (movimenti?: any[]): Promise<Buffer> => {
   const data =
     movimenti ?? (await MovimentiModel.find().sort({ data: -1 }).lean());
