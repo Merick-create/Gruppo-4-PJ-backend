@@ -5,6 +5,5 @@ import contoCorrenteRouter from './Conto-Corrente/conto-corrente-router';
 
 const router = Router();
 router.use('/movimenti', movimentiRouter);
-router.use('/conto-corrente', contoCorrenteRouter);
 router.use(authRouter);
 export default router;
