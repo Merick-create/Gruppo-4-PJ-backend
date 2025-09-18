@@ -8,10 +8,21 @@ const ContoCorrenteSchema = new Schema<ContoCorrente>({
     iban: {type: String, required: true, unique: true}
 });
 
-ContoCorrenteSchema.set('toJSON',{
-    virtuals:true,
-    transform: (_document, returnedObject) => {
-        return returnedObject;
+ContoCorrenteSchema.set('toJSON', {
+    virtuals: true,
+    transform: (_, ret) => {
+        delete ret._id;
+        delete ret.__v;
+        return ret;
+    }
+});
+
+ContoCorrenteSchema.set('toObject', {
+    virtuals: true,
+    transform: (_, ret) => {
+        delete ret._id;
+        delete ret.__v;
+        return ret;
     }
 });
 

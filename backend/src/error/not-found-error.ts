@@ -1,6 +1,18 @@
-export class NotFoundError extends Error {
+import { Request, Response, NextFunction } from "express";
+
+export class NotFoundError extends Error{
     constructor(){
-        super('product not found');
+        super('Entity Not Found');
     }
-    
+}
+
+export const notFoundHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
+  if (err instanceof NotFoundError) {
+    res.status(404).json({
+        error: 'NotFoundError',
+        message: 'Entity Not Found'
+    });
+  } else {
+    next(err);
+  }
 }
