@@ -33,6 +33,44 @@ export class UserService {
     
         return newUser;
     }
+
+     async update(
+    contoId: string,
+    updateData: Partial<ContoCorrente>,
+    credentials?: { username?: string; password?: string }
+  ): Promise<ContoCorrente | null> {
+    const updatedUser = await ContoCorrenteModel.findByIdAndUpdate(
+      contoId,
+      updateData,
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      throw new Error("Conto non trovato");
+    }
+
+    if (credentials) {
+      const identity = await UserIdentityModel.findOne({ user: contoId });
+      if (identity) {
+        if (credentials.username) {
+          identity.credentials.username = credentials.username;
+        }
+        if (credentials.password) {
+          identity.credentials.hashedPassword = await bcrypt.hash(
+            credentials.password,
+            10
+          );
+        }
+        await identity.save();
+      }
+    }
+
+    return updatedUser;
+  }
+  async delete(contoId: string): Promise<void> {
+    await ContoCorrenteModel.findByIdAndDelete(contoId);
+    await UserIdentityModel.deleteOne({ user: contoId });
+  }
 }
 
 export default new UserService();
