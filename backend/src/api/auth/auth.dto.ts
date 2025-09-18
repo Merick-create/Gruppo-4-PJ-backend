@@ -1,5 +1,4 @@
-import { IsDate, IsString, IsIBAN, IsStrongPassword, IsEmail } from "class-validator";
-import { Type } from "class-transformer";
+import {  IsString,  IsStrongPassword, IsEmail, Matches } from "class-validator";
 
 export class AddUserDTO {
   @IsString()
@@ -8,11 +7,10 @@ export class AddUserDTO {
   @IsString()
   nomeTitolare: string;
 
-  @Type(() => Date)
-  @IsDate()
-  dataApertura: Date;
-
-  @IsIBAN()
+  @IsString()
+  @Matches(/^[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}$/, {
+    message: 'IBAN format is invalid',
+  })
   iban: string;
 
   @IsEmail()
