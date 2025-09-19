@@ -6,7 +6,7 @@ const MovimentiSchema = new Schema<Movimenti>({
     dataCreazione: {type: Date, required: true},
     importo: {type: Number, required: true},
     saldo: {type: Number},
-    CategoriaMovimentoid: {type: String, required: true, ref: 'CategorieMovimenti'},
+    CategoriaMovimentoid: {type: Schema.Types.ObjectId, required: true, ref: 'CategorieMovimenti'},
     descrizione: {type: String, required: true}
 });
 
