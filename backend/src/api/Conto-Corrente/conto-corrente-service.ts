@@ -26,7 +26,9 @@ export class UserService {
     }
     const newUser = await ContoCorrenteModel.create(user);
 
-    const apertura = await CategorieMovimentiModel.findOne({ Nome: "Apertura Conto" });
+    const apertura = await CategorieMovimentiModel.findOne({
+      Nome: "Apertura Conto",
+    });
 
     await MovimentiModel.create({
       ContoCorrenteId: newUser._id,
@@ -52,7 +54,6 @@ export class UserService {
   }
 
   async updatePassword(contoId: string, updatedPassword: string) {
-    
     const hashedPassword = await bcrypt.hash(updatedPassword, 10);
 
     await UserIdentityModel.updateOne(
@@ -99,6 +100,50 @@ export class UserService {
     await ContoCorrenteModel.findByIdAndDelete(contoId);
     await UserIdentityModel.deleteOne({ user: contoId });
   }
-}
 
+  async sendMail(sendMail: string) {
+    const nodemailer = require("nodemailer");
+
+    let transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "lorenzoforner685@gmail.com",
+        pass: "hnzg rbdl tznc ekrq",
+      },
+    });
+
+    let mailOptions = {
+      from: "lorenzoforner685@gmail.com", 
+      to: sendMail,
+      subject: "Conferma la tua registrazione al conto corrente",
+      text: `Gentile Cliente,
+
+Grazie per esserti registrato al nostro servizio di conto corrente.
+Per completare la registrazione, ti chiediamo di confermare il tuo indirizzo email cliccando sul link sottostante:
+
+[Inserisci qui il link di conferma]
+
+Se non hai effettuato questa registrazione, ignora questa email.
+
+Cordiali saluti,
+Il Team Banca`,
+      html: `<h2>Conferma la tua registrazione al conto corrente</h2>
+<p>Gentile Cliente,</p>
+<p>Grazie per esserti registrato al nostro servizio di conto corrente.</p>
+<p>Per completare la registrazione, ti chiediamo di confermare il tuo indirizzo email cliccando sul pulsante sottostante:</p>
+<p style="text-align:center;">
+  <a href="[Inserisci qui il link di conferma]" style="display:inline-block; padding:10px 20px; color:#fff; background-color:#007bff; text-decoration:none; border-radius:5px;">Conferma Registrazione</a>
+</p>
+<p>Se non hai effettuato questa registrazione, puoi ignorare questa email.</p>
+<p>Cordiali saluti,<br><strong>Il Team Banca</strong></p>`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        return console.log("Error:", error);
+      }
+      console.log("Email sent:", info.response);
+    });
+  }
+}
 export default new UserService();
