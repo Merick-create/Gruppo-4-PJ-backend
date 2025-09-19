@@ -1,6 +1,5 @@
 export class MovimentiDTO{
     ContoCorrenteId!:string;
-    dataCreazione!:Date;
     importo!:number;
     CategoriaMovimentoid!:string;
     descrizione!:string;

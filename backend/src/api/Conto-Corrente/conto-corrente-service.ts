@@ -1,4 +1,5 @@
 import { UserIdentityModel } from "../../lib/auth/local/user-identity.model";
+import { CategorieMovimentiModel } from "../Categorie-Movimenti/categorie-model";
 import { MovimentiModel } from "../Movimenti/movimenti-model";
 import { ContoCorrente } from "./conto-corrente-entity";
 import { ContoCorrenteModel } from "./conto-corrente-model";
@@ -25,12 +26,14 @@ export class UserService {
     }
     const newUser = await ContoCorrenteModel.create(user);
 
+    const apertura = await CategorieMovimentiModel.findOne({ Nome: "Apertura Conto" });
+
     await MovimentiModel.create({
       ContoCorrenteId: newUser._id,
       dataCreazione: new Date(),
       importo: 1000,
       saldo: 1000,
-      CategoriaMovimentoid: "68cbc060e770205318d4b627",
+      CategoriaMovimentoid: apertura,
       descrizione: "Saldo iniziale",
     });
 
