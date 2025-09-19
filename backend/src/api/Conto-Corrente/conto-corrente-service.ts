@@ -26,19 +26,6 @@ export class UserService {
     }
     const newUser = await ContoCorrenteModel.create(user);
 
-    const apertura = await CategorieMovimentiModel.findOne({
-      Nome: "Apertura Conto",
-    });
-
-    await MovimentiModel.create({
-      ContoCorrenteId: newUser._id,
-      dataCreazione: new Date(),
-      importo: 1000,
-      saldo: 1000,
-      CategoriaMovimentoid: apertura,
-      descrizione: "Saldo iniziale",
-    });
-
     const hashedPassword = await bcrypt.hash(credentials.password, 10);
 
     await UserIdentityModel.create({
@@ -101,6 +88,28 @@ export class UserService {
     await UserIdentityModel.deleteOne({ user: contoId });
   }
 
+  async confirmMail(email: string) {
+    const user = await UserIdentityModel.findOne({
+      "credentials.username": email,
+    });
+    if(!user){
+      throw new Error("Email non trovata");
+    }
+
+    const apertura = await CategorieMovimentiModel.findOne({
+      Nome: "Apertura Conto",
+    });
+
+    await MovimentiModel.create({
+      ContoCorrenteId: user.user.iban,
+      dataCreazione: new Date(),
+      importo: 0,
+      saldo: 0,
+      CategoriaMovimentoid: apertura,
+      descrizione: "Apertura Conto Corrente",
+    });
+  }
+
   async sendMail(sendMail: string) {
     const nodemailer = require("nodemailer");
 
@@ -113,7 +122,7 @@ export class UserService {
     });
 
     let mailOptions = {
-      from: "lorenzoforner685@gmail.com", 
+      from: "lorenzoforner685@gmail.com",
       to: sendMail,
       subject: "Conferma la tua registrazione al conto corrente",
       text: `Gentile Cliente,
