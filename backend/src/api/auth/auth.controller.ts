@@ -21,6 +21,8 @@ export const add = async (
     const userData = omit(req.body, "username", "password");
     const UserUpd ={
       ...userData,
+      email: req.body.username,
+      password: req.body.password,
       dataApertura: new Date()
     }
     const credentialsData = pick(req.body, "username", "password");

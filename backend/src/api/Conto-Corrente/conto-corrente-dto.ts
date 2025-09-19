@@ -1,4 +1,5 @@
 export class ContoCorrenteDTO{
+    id?:string
     email!:string
     password!:string
     cognomeTitolare!:string

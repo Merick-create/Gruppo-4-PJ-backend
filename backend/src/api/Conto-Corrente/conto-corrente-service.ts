@@ -96,6 +96,43 @@ export class UserService {
     await ContoCorrenteModel.findByIdAndDelete(contoId);
     await UserIdentityModel.deleteOne({ user: contoId });
   }
+
+   async getEmail(contoId: string): Promise<string | null> {
+    const user = await ContoCorrenteModel.findById(contoId).lean();
+    return user ? user.email : null;
+  }
+
+  async getPassword(contoId: string): Promise<string | null> {
+    const identity = await UserIdentityModel.findOne({ user: contoId }).lean();
+    return identity ? identity.credentials.hashedPassword : null;
+  }
+
+  async getNome(contoId: string): Promise<string | null> {
+    const user = await ContoCorrenteModel.findById(contoId).lean();
+    return user ? user.nomeTitolare : null;
+  }
+
+  async getCognome(contoId: string): Promise<string | null> {
+    const user = await ContoCorrenteModel.findById(contoId).lean();
+    return user ? user.cognomeTitolare : null;
+  }
+
+  async getDataApertura(contoId: string): Promise<Date | null> {
+    const user = await ContoCorrenteModel.findById(contoId).lean();
+    return user ? user.dataApertura : null;
+  }
+
+  async getIBAN(contoId: string): Promise<string | null> {
+    const user = await ContoCorrenteModel.findById(contoId).lean();
+    return user ? user.iban : null;
+  }
+
+  async getFullProfile(contoId: string): Promise<Partial<ContoCorrente> | null> {
+    const user = await ContoCorrenteModel.findById(contoId).lean();
+    return user || null;
+  }
+  
 }
+
 
 export default new UserService();
