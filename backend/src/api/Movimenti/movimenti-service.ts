@@ -6,7 +6,6 @@ import { format } from "@fast-csv/format";
 import { Writable } from "stream";
 import { addLog } from "../log/log-service";
 import  {MovimentiDTO}  from "./movimenti-dto";
-MovimentiDTO
 export const esportaMovimenti = async (movimenti?: any[]): Promise<Buffer> => {
   const data =
     movimenti ?? (await MovimentiModel.find().sort({ data: -1 }).lean());
@@ -138,10 +137,11 @@ export async function eseguiRicarica(dto: RicaricaDto, ip?: string) {
 
     await MovimentiModel.create({
       ContoCorrenteId: conto.id,
-      importo: -dto.importo,
       dataCreazione: new Date(),
-      descrizione: `Ricarica ${dto.operatore} numero ${dto.numeroTelefono}`,
+      importo: -dto.importo,
       saldo: saldoDisponibile - dto.importo,
+      CategoriaMovimentoid: dto.CategoriaMovimentoid,
+      descrizione: `Ricarica ${dto.operatore} numero ${dto.numeroTelefono}`,
     });
 
     await logOperazione(

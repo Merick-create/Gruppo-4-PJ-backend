@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { TypedRequest } from "../../lib/typed-request-interface";
-import { AddUserDTO } from "./auth.dto";
+import { AddUserDTO, UpdPsswdDTO } from "./auth.dto";
 import userSrv, {
   UserExistsError,
 } from "../Conto-Corrente/conto-corrente-service";
@@ -72,4 +72,27 @@ export const login = async (
       });
     }
   )(req, res, next);
+};
+
+export const updPssw = async (
+  req: TypedRequest<UpdPsswdDTO>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    await userSrv.updatePassword(req.user?.id!, req.body.password);
+    await logOperazione(req.ip, `Password aggiornata con successo`, true);
+
+    res.status(201).json("Password Aggiornata");
+  } catch (err) {
+    if (err instanceof UserExistsError) {
+      res.status(400);
+      res.json({
+        error: err.name,
+        message: err.message,
+      });
+    } else {
+      next(err);
+    }
+  }
 };
