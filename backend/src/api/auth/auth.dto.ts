@@ -30,3 +30,10 @@ export class UpdPsswdDTO {
   })
   password: string;
 }
+
+export class ConfirmUserDTO {
+  @IsEmail()
+  username: string;
+}
+
+

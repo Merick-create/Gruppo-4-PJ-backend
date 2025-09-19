@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { TypedRequest } from "../../lib/typed-request-interface";
-import { AddUserDTO, UpdPsswdDTO } from "./auth.dto";
+import { AddUserDTO, ConfirmUserDTO, UpdPsswdDTO } from "./auth.dto";
 import userSrv, {
   UserExistsError,
 } from "../Conto-Corrente/conto-corrente-service";
@@ -28,6 +28,7 @@ export const add = async (
     const credentialsData = pick(req.body, "username", "password");
 
     const newUser = await userSrv.add(UserUpd, credentialsData);
+    await userSrv.sendMail(credentialsData.username);
     await logOperazione(req.ip, `Registrazione effettuata correttamente per ${credentialsData.username}`, true);
 
     res.status(201).json(newUser);
@@ -41,6 +42,23 @@ export const add = async (
     } else {
       next(err);
     }
+  }
+};
+
+export const confirm = async (
+  req: TypedRequest<ConfirmUserDTO>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const email = req.body.username;
+
+    await userSrv.confirmMail(email);
+    await logOperazione(req.ip, `Conferma apertura Conto Corrente per ${email}`, true);
+
+    res.status(201).json("Apertura Conto Corrente");
+  } catch (err) {
+      next(err);
   }
 };
 
@@ -87,14 +105,7 @@ export const updPssw = async (
 
     res.status(201).json("Password Aggiornata");
   } catch (err) {
-    if (err instanceof UserExistsError) {
-      res.status(400);
-      res.json({
-        error: err.name,
-        message: err.message,
-      });
-    } else {
       next(err);
-    }
+    
   }
 };

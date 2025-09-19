@@ -32,15 +32,11 @@ export const esportaMovimenti = async (movimenti?: any[]): Promise<Buffer> => {
 
 export const getUltimiMovimenti = async (n: number) => {
   const movimenti = await MovimentiModel.find()
-    .sort({ dataCreazione: -1 })
+    .sort({ data: -1 })
     .limit(n)
-    .exec();
+    .populate('CategoriaMovimentoID', 'NomeCategoria Tipologia'); 
 
-  const saldoAgg = await MovimentiModel.aggregate([
-    { $group: { _id: null, saldo: { $sum: "$importo" } } },
-  ]);
-
-  const saldo = saldoAgg.length > 0 ? saldoAgg[0].saldo : 0;
+  const saldo = movimenti.reduce((tot, m) => tot + m.importo, 0);
 
   return { movimenti, saldo };
 };
