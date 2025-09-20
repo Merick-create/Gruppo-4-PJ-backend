@@ -204,7 +204,6 @@ Il Team Banca`,
       console.log("Email sent:", info.response);
     });
   }
-
   
 }
 

@@ -30,11 +30,13 @@ export const esportaMovimenti = async (movimenti?: any[]): Promise<Buffer> => {
   });
 };
 
-export const getUltimiMovimenti = async (n: number) => {
-  const movimenti = await MovimentiModel.find()
-    .sort({ data: -1 })
-    .limit(n)
-    .populate('CategoriaMovimentoID', 'NomeCategoria Tipologia'); 
+export const getUltimiMovimenti = async (n?: number) => {
+  const limit = 5;
+
+  const movimenti = await MovimentiModel.find({}, { CategoriaMovimentoID: 1 })
+  .sort({ dataCreazione: -1 })
+  .limit(5)
+  .lean(); 
 
   const saldo = movimenti.reduce((tot, m) => tot + m.importo, 0);
 
@@ -42,27 +44,29 @@ export const getUltimiMovimenti = async (n: number) => {
 };
 
 export const getUltimiMovimentiByCategoria = async (
-  n: number,
-  categoria: string
+  n?: number,
+  categoria?: string
 ) => {
+    const limit = n && !isNaN(n) ? n : 5;
   const movimenti = await MovimentiModel.find({ nomeCategoria: categoria })
     .sort({ dataCreazione: -1 })
-    .limit(n)
+    .limit(limit)
     .exec();
 
   return movimenti;
 };
 
 export const getUltimiMovimentiByDateRange = async (
-  n: number,
-  dataInizio: Date,
-  dataFine: Date
+  n?: number,
+  dataInizio?: Date,
+  dataFine?: Date
 ) => {
+  const limit = n && !isNaN(n) ? n : 5;
   const movimenti = await MovimentiModel.find({
     dataCreazione: { $gte: dataInizio, $lte: dataFine },
   })
     .sort({ dataCreazione: -1 })
-    .limit(n)
+    .limit(limit)
     .exec();
 
   return movimenti;

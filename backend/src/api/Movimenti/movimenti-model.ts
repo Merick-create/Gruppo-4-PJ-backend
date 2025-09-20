@@ -16,4 +16,4 @@ MovimentiSchema.set('toJSON',{
     }   
 });
 
-export const MovimentiModel= model<Movimenti>('Movimenti',MovimentiSchema);
+export const MovimentiModel= model<Movimenti>('Movimentis',MovimentiSchema);
