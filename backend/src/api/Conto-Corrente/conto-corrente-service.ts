@@ -40,13 +40,28 @@ export class UserService {
     return newUser;
   }
 
-  async updatePassword(contoId: string, updatedPassword: string) {
-    const hashedPassword = await bcrypt.hash(updatedPassword, 10);
+  async updatePassword(contoId: string, oldPassword: string, newPassword: string) {
+    if (!oldPassword || !newPassword) {
+      throw new Error("Vecchia e nuova password sono richieste");
+    }
 
-    await UserIdentityModel.updateOne(
-      { user: contoId },
-      { $set: { "credentials.hashedPassword": hashedPassword } }
-    );
+    const identity = await UserIdentityModel.findOne({ user: contoId });
+    if (!identity) {
+      throw new Error("Utente non trovato");
+    }
+
+    
+    const match = await bcrypt.compare(oldPassword, identity.credentials.hashedPassword);
+    if (!match) {
+      throw new Error("Vecchia password errata");
+    }
+
+    
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    identity.credentials.hashedPassword = hashedPassword;
+    await identity.save();
+
+    return { message: "Password aggiornata con successo" };
   }
 
   async update(

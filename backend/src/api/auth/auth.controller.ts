@@ -100,7 +100,9 @@ export const updPssw = async (
   next: NextFunction
 ) => {
   try {
-    await userSrv.updatePassword(req.user?.id!, req.body.password);
+
+    const {oldPassword,newPassword}=req.body;
+    await userSrv.updatePassword(req.user?.id!,oldPassword,newPassword);
     await logOperazione(req.ip, `Password aggiornata con successo`, true);
 
     res.status(201).json("Password Aggiornata");

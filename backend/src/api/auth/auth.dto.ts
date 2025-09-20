@@ -24,11 +24,12 @@ export class AddUserDTO {
 }
 
 export class UpdPsswdDTO {
+  oldPassword:string;
   @IsString()
   @IsStrongPassword({
     minLength: 8,
   })
-  password: string;
+  newPassword: string;
 }
 
 export class ConfirmUserDTO {
