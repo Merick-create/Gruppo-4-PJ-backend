@@ -122,6 +122,16 @@ export class UserService {
     const user = await ContoCorrenteModel.findById(contoId).lean();
     return user || null;
   }
+
+  async sendMail(username: string): Promise<void> {
+    // qui puoi implementare l’invio dell’email o lasciarlo vuoto per ora
+    console.log(`Invio mail a ${username}`);
+  }
+
+  async confirmMail(email: string): Promise<void> {
+    // qui puoi implementare la conferma email
+    console.log(`Conferma email per ${email}`);
+  }
   
 }
 
