@@ -67,3 +67,17 @@ export const deleteCategoria = async (
     next(error);
   }
 };
+
+export const getCategoriaByNome = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { nome } = req.params;
+    const categoria = await CategorieMovimentiService.getCategoriaByNome(nome);
+    res.json({ id: categoria._id }); // restituiamo solo l'id
+  } catch (error) {
+    next(error);
+  }
+};

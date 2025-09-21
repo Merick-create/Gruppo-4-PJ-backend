@@ -34,6 +34,12 @@ export class CategorieMovimentiService {
     if (!categoria) throw new Error("Categoria non trovata");
     return { message: "Categoria eliminata con successo" };
   }
+  
+  async getCategoriaByNome(nome: string) {
+  const categoria = await CategorieMovimentiModel.findOne({ Nome: nome });
+  if (!categoria) throw new Error("Categoria non trovata");
+  return categoria;
+}
 }
 
 export default new CategorieMovimentiService();
