@@ -6,6 +6,7 @@ import { format } from "@fast-csv/format";
 import { Writable } from "stream";
 import { addLog } from "../log/log-service";
 import  {MovimentiDTO}  from "./movimenti-dto";
+import CategorieMovimentiService from '../Categorie-Movimenti/categorie-service';
 export const esportaMovimenti = async (movimenti?: any[]): Promise<Buffer> => {
   const data =
     movimenti ?? (await MovimentiModel.find().sort({ data: -1 }).lean());
@@ -31,31 +32,42 @@ export const esportaMovimenti = async (movimenti?: any[]): Promise<Buffer> => {
 };
 
 export const getUltimiMovimenti = async (n?: number) => {
-  const limit = 5;
+  const limit = n && !isNaN(n) ? n : 5;
+  const movimenti = await MovimentiModel.find()
+    .sort({ dataCreazione: -1 })
+    .limit(limit)
+    .populate({ path: 'CategoriaMovimentoid', select: 'Nome' })
+    .lean();
+  const movimentiConCategoria = movimenti.map(m => ({
+    ...m,
+    NomeCategoria: m.CategoriaMovimentoid?.Nome || 'Non definita'
+  }));
 
+<<<<<<< HEAD
   const movimenti = await MovimentiModel.find({})
   .sort({ dataCreazione: -1 })
   .limit(5)
   .lean(); 
+=======
+  const saldo = movimentiConCategoria.reduce((tot, m) => tot + m.importo, 0);
+>>>>>>> 4d166e6f11785dbc6d9e65de72c413870466f7c5
 
-  const saldo = movimenti.reduce((tot, m) => tot + m.importo, 0);
-
-  return { movimenti, saldo };
+  return { movimenti: movimentiConCategoria, saldo };
 };
 
-export const getUltimiMovimentiByCategoria = async (
-  n?: number,
-  categoria?: string
-) => {
-    const limit = n && !isNaN(n) ? n : 5;
-  const movimenti = await MovimentiModel.find({ nomeCategoria: categoria })
+export const getUltimiMovimentiByCategoria = async (n?: number, nomeCategoria?: string) => {
+  const limit = n && !isNaN(n) ? n : 5;
+
+  if (!nomeCategoria) throw new Error("Nome categoria non fornito");
+  const categoria = await CategorieMovimentiService.getCategoriaByNome(nomeCategoria);
+
+  const movimenti = await MovimentiModel.find({ CategoriaMovimentoid: categoria._id })
     .sort({ dataCreazione: -1 })
     .limit(limit)
     .exec();
 
   return movimenti;
 };
-
 export const getUltimiMovimentiByDateRange = async (
   n?: number,
   dataInizio?: Date,
