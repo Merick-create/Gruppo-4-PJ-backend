@@ -33,26 +33,14 @@ export const esportaMovimenti = async (movimenti?: any[]): Promise<Buffer> => {
 
 export const getUltimiMovimenti = async (n?: number) => {
   const limit = n && !isNaN(n) ? n : 5;
-  const movimenti = await MovimentiModel.find()
-    .sort({ dataCreazione: -1 })
-    .limit(limit)
-    .populate({ path: 'CategoriaMovimentoid', select: 'Nome' })
-    .lean();
-  const movimentiConCategoria = movimenti.map(m => ({
-    ...m,
-    NomeCategoria: m.CategoriaMovimentoid?.Nome || 'Non definita'
-  }));
-
-<<<<<<< HEAD
   const movimenti = await MovimentiModel.find({})
   .sort({ dataCreazione: -1 })
   .limit(5)
   .lean(); 
-=======
-  const saldo = movimentiConCategoria.reduce((tot, m) => tot + m.importo, 0);
->>>>>>> 4d166e6f11785dbc6d9e65de72c413870466f7c5
 
-  return { movimenti: movimentiConCategoria, saldo };
+  const saldo = movimenti.reduce((tot, m) => tot + m.importo, 0);
+
+  return { movimenti, saldo };
 };
 
 export const getUltimiMovimentiByCategoria = async (n?: number, nomeCategoria?: string) => {
