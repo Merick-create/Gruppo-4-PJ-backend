@@ -6,6 +6,7 @@ import { format } from "@fast-csv/format";
 import { Writable } from "stream";
 import { addLog } from "../log/log-service";
 import  {MovimentiDTO}  from "./movimenti-dto";
+import CategorieMovimentiService from '../Categorie-Movimenti/categorie-service';
 export const esportaMovimenti = async (movimenti?: any[]): Promise<Buffer> => {
   const data =
     movimenti ?? (await MovimentiModel.find().sort({ data: -1 }).lean());
@@ -43,19 +44,21 @@ export const getUltimiMovimenti = async (n?: number) => {
   return { movimenti, saldo };
 };
 
-export const getUltimiMovimentiByCategoria = async (
-  n?: number,
-  categoria?: string
-) => {
-    const limit = n && !isNaN(n) ? n : 5;
-  const movimenti = await MovimentiModel.find({ nomeCategoria: categoria })
+export const getUltimiMovimentiByCategoria = async (n?: number, nomeCategoria?: string) => {
+  const limit = n && !isNaN(n) ? n : 5;
+
+  if (!nomeCategoria) throw new Error("Nome categoria non fornito");
+
+  // Recupera l'ID della categoria
+  const categoria = await CategorieMovimentiService.getCategoriaByNome(nomeCategoria);
+
+  const movimenti = await MovimentiModel.find({ CategoriaMovimentoid: categoria._id })
     .sort({ dataCreazione: -1 })
     .limit(limit)
     .exec();
 
   return movimenti;
 };
-
 export const getUltimiMovimentiByDateRange = async (
   n?: number,
   dataInizio?: Date,
