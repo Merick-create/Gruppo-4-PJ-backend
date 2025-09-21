@@ -104,8 +104,8 @@ export class UserService {
   }
 
    async getEmail(contoId: string): Promise<string | null> {
-    const user = await ContoCorrenteModel.findById(contoId).lean();
-    return user ? user.email : null;
+    const user = await UserIdentityModel.findOne({ user: contoId }).lean();
+    return user ? user.credentials.username : null;
   }
 
   async getPassword(contoId: string): Promise<string | null> {
