@@ -33,7 +33,7 @@ export const esportaMovimenti = async (movimenti?: any[]): Promise<Buffer> => {
 export const getUltimiMovimenti = async (n?: number) => {
   const limit = 5;
 
-  const movimenti = await MovimentiModel.find({}, { CategoriaMovimentoID: 1 })
+  const movimenti = await MovimentiModel.find({})
   .sort({ dataCreazione: -1 })
   .limit(5)
   .lean(); 
