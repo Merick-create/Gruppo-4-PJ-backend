@@ -32,24 +32,26 @@ export const esportaMovimenti = async (movimenti?: any[]): Promise<Buffer> => {
 };
 
 export const getUltimiMovimenti = async (n?: number) => {
-  const limit = 5;
+  const limit = n && !isNaN(n) ? n : 5;
+  const movimenti = await MovimentiModel.find()
+    .sort({ dataCreazione: -1 })
+    .limit(limit)
+    .populate({ path: 'CategoriaMovimentoid', select: 'Nome' })
+    .lean();
+  const movimentiConCategoria = movimenti.map(m => ({
+    ...m,
+    NomeCategoria: m.CategoriaMovimentoid?.Nome || 'Non definita'
+  }));
 
-  const movimenti = await MovimentiModel.find({}, { CategoriaMovimentoID: 1 })
-  .sort({ dataCreazione: -1 })
-  .limit(5)
-  .lean(); 
+  const saldo = movimentiConCategoria.reduce((tot, m) => tot + m.importo, 0);
 
-  const saldo = movimenti.reduce((tot, m) => tot + m.importo, 0);
-
-  return { movimenti, saldo };
+  return { movimenti: movimentiConCategoria, saldo };
 };
 
 export const getUltimiMovimentiByCategoria = async (n?: number, nomeCategoria?: string) => {
   const limit = n && !isNaN(n) ? n : 5;
 
   if (!nomeCategoria) throw new Error("Nome categoria non fornito");
-
-  // Recupera l'ID della categoria
   const categoria = await CategorieMovimentiService.getCategoriaByNome(nomeCategoria);
 
   const movimenti = await MovimentiModel.find({ CategoriaMovimentoid: categoria._id })

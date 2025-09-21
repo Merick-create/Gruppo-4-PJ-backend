@@ -8,18 +8,12 @@ import { BonificoDto } from "../Bonfico/bonifico-dto";
 import { RicaricaDto } from "../Ricarica-dto/ricarica-dto";
 
 
-export const RicercaMov1 = async (
-  req: TypedRequest<unknown, QueryMovimentiDTO>,
-  res: Response,
-  next: NextFunction
-) => {
+export const RicercaMov1 = async (req, res, next) => {
   try {
     const { n } = req.query;
     const result = await getUltimiMovimenti(Number(n));
 
-    if (!result.movimenti.length) {
-      throw new NotFoundError();
-    }
+    if (!result.movimenti.length) throw new NotFoundError();
 
     res.json(result);
   } catch (err) {
