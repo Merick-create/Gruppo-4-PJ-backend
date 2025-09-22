@@ -9,7 +9,7 @@ export class UserExistsError extends Error {
   constructor() {
     super();
     this.name = "UserExists";
-    this.message = "username already in use";
+    this.message = "email già in uso";
   }
 }
 
@@ -40,7 +40,11 @@ export class UserService {
     return newUser;
   }
 
-  async updatePassword(contoId: string, oldPassword: string, newPassword: string) {
+  async updatePassword(
+    contoId: string,
+    oldPassword: string,
+    newPassword: string
+  ) {
     if (!oldPassword || !newPassword) {
       throw new Error("Vecchia e nuova password sono richieste");
     }
@@ -50,13 +54,14 @@ export class UserService {
       throw new Error("Utente non trovato");
     }
 
-    
-    const match = await bcrypt.compare(oldPassword, identity.credentials.hashedPassword);
+    const match = await bcrypt.compare(
+      oldPassword,
+      identity.credentials.hashedPassword
+    );
     if (!match) {
       throw new Error("Vecchia password errata");
     }
 
-    
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     identity.credentials.hashedPassword = hashedPassword;
     await identity.save();
@@ -103,7 +108,7 @@ export class UserService {
     await UserIdentityModel.deleteOne({ user: contoId });
   }
 
-   async getEmail(contoId: string): Promise<string | null> {
+  async getEmail(contoId: string): Promise<string | null> {
     const user = await UserIdentityModel.findOne({ user: contoId }).lean();
     return user ? user.credentials.username : null;
   }
@@ -133,7 +138,9 @@ export class UserService {
     return user ? user.iban : null;
   }
 
-  async getFullProfile(contoId: string): Promise<Partial<ContoCorrente> | null> {
+  async getFullProfile(
+    contoId: string
+  ): Promise<Partial<ContoCorrente> | null> {
     const user = await ContoCorrenteModel.findById(contoId).lean();
     return user || null;
   }
@@ -142,7 +149,7 @@ export class UserService {
     const user = await UserIdentityModel.findOne({
       "credentials.username": email,
     });
-    if(!user){
+    if (!user) {
       throw new Error("Email non trovata");
     }
 
@@ -204,8 +211,6 @@ Il Team Banca`,
       console.log("Email sent:", info.response);
     });
   }
-  
 }
-
 
 export default new UserService();
