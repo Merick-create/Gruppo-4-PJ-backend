@@ -19,20 +19,28 @@ export const add = async (
 ) => {
   try {
     const userData = omit(req.body, "username", "password");
-    const UserUpd ={
+    const UserUpd = {
       ...userData,
-      email: req.body.username,
-      password: req.body.password,
-      dataApertura: new Date()
-    }
+      dataApertura: new Date(),
+    };
     const credentialsData = pick(req.body, "username", "password");
 
     const newUser = await userSrv.add(UserUpd, credentialsData);
     await userSrv.sendMail(credentialsData.username);
-    await logOperazione(req.ip, `Registrazione effettuata correttamente per ${credentialsData.username}`, true);
+    await logOperazione(
+      req.ip,
+      `Registrazione effettuata correttamente per ${credentialsData.username}`,
+      true
+    );
 
     res.status(201).json(newUser);
-  } catch (err) {
+  } catch (err: any) {
+    await logOperazione(
+      req.ip,
+      `Errore durante la registrazione: ${err.message}`,
+      false
+    );
+
     if (err instanceof UserExistsError) {
       res.status(400);
       res.json({
@@ -54,11 +62,20 @@ export const confirm = async (
     const email = req.body.username;
 
     await userSrv.confirmMail(email);
-    await logOperazione(req.ip, `Conferma apertura Conto Corrente per ${email}`, true);
+    await logOperazione(
+      req.ip,
+      `Conferma apertura Conto Corrente per ${email}`,
+      true
+    );
 
     res.status(201).json("Apertura Conto Corrente");
-  } catch (err) {
-      next(err);
+  } catch (err: any) {
+    await logOperazione(
+      req.ip,
+      `Errore durante l'apertura del conto': ${err.message}`,
+      false
+    );
+    next(err);
   }
 };
 
@@ -67,31 +84,44 @@ export const login = async (
   res: Response,
   next: NextFunction
 ) => {
-  passport.authenticate(
-    "local",
-    { session: false },
-    async (err, user, info) => {
-      if (err) {
-        next(err);
-        return;
-      }
-      if (!user) {
-        res.status(400);
+  try {
+    passport.authenticate(
+      "local",
+      { session: false },
+      async (err, user, info) => {
+        if (err) {
+          next(err);
+          return;
+        }
+        if (!user) {
+          res.status(400);
+          res.json({
+            error: "LoginError",
+            message: info.message,
+          });
+          return;
+        }
+        const token = jwt.sign(user, JWT_SECRET, { expiresIn: TOKEN_DUR });
+        await logOperazione(
+          req.ip,
+          `${user.cognomeTitolare} ${user.nomeTitolare} ha effettuato il login dal portale`,
+          true
+        );
+        res.status(200);
         res.json({
-          error: "LoginError",
-          message: info.message,
+          user,
+          token,
         });
-        return;
       }
-      const token = jwt.sign(user, JWT_SECRET, { expiresIn: TOKEN_DUR });
-      await logOperazione(req.ip, `${user.cognomeTitolare} ${user.nomeTitolare} ha effettuato il login dal portale`, true);
-      res.status(200);
-      res.json({
-        user,
-        token,
-      });
-    }
-  )(req, res, next);
+    )(req, res, next);
+  } catch (err: any) {
+    await logOperazione(
+      req.ip,
+      `Errore durante l'accesso': ${err.message}`,
+      false
+    );
+    next(err);
+  }
 };
 
 export const updPssw = async (
@@ -100,14 +130,17 @@ export const updPssw = async (
   next: NextFunction
 ) => {
   try {
-
-    const {oldPassword,newPassword}=req.body;
-    await userSrv.updatePassword(req.user?.id!,oldPassword,newPassword);
+    const { oldPassword, newPassword } = req.body;
+    await userSrv.updatePassword(req.user?.id!, oldPassword, newPassword);
     await logOperazione(req.ip, `Password aggiornata con successo`, true);
 
     res.status(201).json("Password Aggiornata");
-  } catch (err) {
-      next(err);
-    
+  } catch (err: any) {
+    await logOperazione(
+      req.ip,
+      `Errore durante la modifica della password': ${err.message}`,
+      false
+    );
+    next(err);
   }
 };
