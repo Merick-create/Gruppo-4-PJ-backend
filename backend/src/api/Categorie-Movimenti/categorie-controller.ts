@@ -76,7 +76,7 @@ export const getCategoriaByNome = async (
   try {
     const { nome } = req.params;
     const categoria = await CategorieMovimentiService.getCategoriaByNome(nome);
-    res.json({ id: categoria._id }); // restituiamo solo l'id
+    res.json({ id: categoria._id });
   } catch (error) {
     next(error);
   }

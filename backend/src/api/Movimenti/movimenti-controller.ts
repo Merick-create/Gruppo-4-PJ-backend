@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { getUltimiMovimenti, esportaMovimenti, getUltimiMovimentiByCategoria, getUltimiMovimentiByDateRange } from './movimenti-service';
+import { getUltimiMovimenti, esportaMovimenti, getUltimiMovimentiByCategoria, getUltimiMovimentiByDateRange, getSaldoConto } from './movimenti-service';
 import { QueryMovimentiDTO, QueryMovimentiCategoriaDTO, QueryMovimentiDateRangeDTO } from './movimenti-dto';
 import { TypedRequest } from '../../lib/typed-request-interface';
 import { NotFoundError } from '../../error/not-found-error';
@@ -107,6 +107,20 @@ export const ricarica= async (req: Request, res: Response) => {
     res.status(200).json(result);
   } catch (error: any) {
     res.status(400).json({ message: error.message || "Errore ricarica" });
+  }
+};
+
+export const getSaldo = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { iban } = req.params;
+    if (!iban) res.status(400).json({ message: 'IBAN mancante' });
+
+    const saldo = await getSaldoConto(iban);
+
+    res.json({ saldo });
+  } catch (error) {
+    console.error('Errore getSaldo:', error);
+    next(error);
   }
 };
 

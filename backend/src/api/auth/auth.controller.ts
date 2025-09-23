@@ -26,6 +26,23 @@ export const add = async (
     const credentialsData = pick(req.body, "username", "password");
 
     const newUser = await userSrv.add(UserUpd, credentialsData);
+     const CategorieMovimentiModel = require("../Categorie-Movimenti/categorie-model"); // importa il modello
+    const MovimentiModel = require("../Movimenti/movimenti-model"); // importa il modello
+
+    // Recupera l'ID della categoria "Apertura Conto"
+    const categoria = await CategorieMovimentiModel.findOne({ Nome: "Apertura Conto" });
+
+    if (categoria) {
+      const saldoIniziale = 1000;
+      await MovimentiModel.create({
+        ContoCorrenteId: newUser.id,
+        importo: saldoIniziale,
+        saldo: saldoIniziale,
+        CategoriaMovimentoid: categoria._id,
+        descrizione: "Saldo iniziale conto",
+        dataCreazione: new Date(),
+      });
+    }
     await userSrv.sendMail(credentialsData.username);
     await logOperazione(
       req.ip,

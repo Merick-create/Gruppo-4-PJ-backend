@@ -113,11 +113,13 @@ export async function eseguiBonifico(dto: MovimentiDTO, mittenteId: string, ip?:
     throw error;
   }
 }
-export async function getSaldoConto(iban: string): Promise<number> {
-  const ultimoMovimento = await MovimentiModel.findOne({ ContoCorrenteId: iban })
+export async function getSaldoConto(contoCorrenteId: string): Promise<number> {
+  // Prendi l'ultimo movimento (ordinato per data)
+  const ultimoMovimento = await MovimentiModel.findOne({ ContoCorrenteId: contoCorrenteId })
     .sort({ dataCreazione: -1 });
 
-  return ultimoMovimento ? ultimoMovimento.saldo : 1000;
+  // Se non ci sono movimenti (teoricamente non dovrebbe succedere), ritorna 0
+  return ultimoMovimento ? ultimoMovimento.saldo : 0;
 }
 
 export async function eseguiRicarica(dto: RicaricaDto, ip?: string) {
