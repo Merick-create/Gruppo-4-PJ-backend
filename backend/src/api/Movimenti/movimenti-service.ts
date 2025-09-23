@@ -7,6 +7,7 @@ import { Writable } from "stream";
 import { addLog } from "../log/log-service";
 import  {MovimentiDTO}  from "./movimenti-dto";
 import CategorieMovimentiService from '../Categorie-Movimenti/categorie-service';
+import { ContoCorrente } from "../Conto-Corrente/conto-corrente-entity";
 export const esportaMovimenti = async (movimenti?: any[]): Promise<Buffer> => {
   const data =
     movimenti ?? (await MovimentiModel.find().sort({ data: -1 }).lean());
@@ -31,9 +32,9 @@ export const esportaMovimenti = async (movimenti?: any[]): Promise<Buffer> => {
   });
 };
 
-export const getUltimiMovimenti = async (n?: number) => {
+export const getUltimiMovimenti = async (n?: number,contoCorrenteid?:string) => {
   const limit = n && !isNaN(n) ? n : 5;
-  const movimenti = await MovimentiModel.find({})
+  const movimenti = await MovimentiModel.find({ContoCorrenteId:contoCorrenteid})
   .sort({ dataCreazione: -1 })
   .limit(5)
   .lean(); 

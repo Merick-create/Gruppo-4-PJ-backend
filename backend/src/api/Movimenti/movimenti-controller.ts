@@ -11,7 +11,8 @@ import { RicaricaDto } from "../Ricarica-dto/ricarica-dto";
 export const RicercaMov1 = async (req, res, next) => {
   try {
     const { n } = req.query;
-    const result = await getUltimiMovimenti(Number(n));
+    const us=req.user.id;
+    const result = await getUltimiMovimenti(Number(n),us);
 
     if (!result.movimenti.length) throw new NotFoundError();
 
