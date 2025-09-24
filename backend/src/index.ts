@@ -11,8 +11,9 @@ const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/gruppo4';
 mongoose.set('debug', true);
 mongoose.connect(MONGO_URI)
     .then(_ => {
-        createServer(app).listen(3000, () => {
-            console.log('Server listening on port 3000');
+        const port = process.env.PORT || 3000;
+        createServer(app).listen(port, () => {
+            console.log(`Server listening on port ${port}`);
         });
     })
     .catch(err => {
