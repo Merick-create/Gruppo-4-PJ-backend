@@ -8,9 +8,9 @@ import { addLog } from "../log/log-service";
 import  {MovimentiDTO}  from "./movimenti-dto";
 import CategorieMovimentiService from '../Categorie-Movimenti/categorie-service';
 import { ContoCorrente } from "../Conto-Corrente/conto-corrente-entity";
-export const esportaMovimenti = async (movimenti?: any[]): Promise<Buffer> => {
-  const data =
-    movimenti ?? (await MovimentiModel.find().sort({ data: -1 }).lean());
+
+export const esportaMovimenti = async (id?: string): Promise<Buffer> => { 
+  const data = (await MovimentiModel.find({ContoCorrenteId: id}).sort({ data: -1 }).lean());
 
   return new Promise((resolve, reject) => {
     const bufferChunks: Buffer[] = [];

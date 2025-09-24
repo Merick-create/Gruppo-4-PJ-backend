@@ -71,7 +71,7 @@ export const exportMovimenti = async (
   next: NextFunction
 ) => {
   try {
-    const fileBuffer = await esportaMovimenti();
+    const fileBuffer = await esportaMovimenti(req.user?.id);
 
     res.setHeader(
       'Content-Disposition',
