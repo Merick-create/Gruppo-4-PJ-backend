@@ -1,0 +1,2 @@
+MONGO_URI="mongodb+srv://riccardobrasiliani_db_user:EngwLVA96KUoROEV@gruppo4cluster.l9ptr7d.mongodb.net/";
+PORT=3000
