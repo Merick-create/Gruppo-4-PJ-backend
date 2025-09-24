@@ -40,17 +40,18 @@ export const getUltimiMovimenti = async (n?: number,contoCorrenteid?:string) => 
   .lean(); 
 
   const saldo = await getSaldoConto(contoCorrenteid!);
+  //const saldo = movimenti.reduce((tot, m) => tot + m.importo, 0);
 
   return { movimenti, saldo };
 };
 
-export const getUltimiMovimentiByCategoria = async (n?: number, nomeCategoria?: string) => {
+export const getUltimiMovimentiByCategoria = async (n?: number, nomeCategoria?: string, ccID?: string) => {
   const limit = n && !isNaN(n) ? n : 5;
 
   if (!nomeCategoria) throw new Error("Nome categoria non fornito");
   const categoria = await CategorieMovimentiService.getCategoriaByNome(nomeCategoria);
 
-  const movimenti = await MovimentiModel.find({ CategoriaMovimentoid: categoria._id })
+  const movimenti = await MovimentiModel.find({ CategoriaMovimentoid: categoria._id, ContoCorrenteId: ccID})
     .sort({ dataCreazione: -1 })
     .limit(limit)
     .exec();
@@ -76,6 +77,7 @@ export async function eseguiBonifico(dto: MovimentiDTO, mittenteId: string, ip?:
   try {
     const contoMittente = await ContoCorrenteModel.findById(mittenteId);
     const contoDestinatario = await ContoCorrenteModel.findOne({iban: dto.ContoCorrenteId});
+    console.log(dto.ContoCorrenteId);
     console.log(contoDestinatario);
 
     if (!contoMittente || !contoDestinatario) {
@@ -90,7 +92,7 @@ export async function eseguiBonifico(dto: MovimentiDTO, mittenteId: string, ip?:
     }
 
     await MovimentiModel.create({
-      ContoCorrenteId: contoMittente.iban,
+      ContoCorrenteId: contoMittente.id,
       importo: -dto.importo,
       saldo: saldoMittente - dto.importo,
       dataCreazione: new Date(),
@@ -99,7 +101,7 @@ export async function eseguiBonifico(dto: MovimentiDTO, mittenteId: string, ip?:
     });
     const saldoDest = await getSaldoConto(contoDestinatario.id);
     await MovimentiModel.create({
-      ContoCorrenteId: contoDestinatario.iban,
+      ContoCorrenteId: contoDestinatario.id,
       importo: dto.importo,
       saldo: saldoDest + dto.importo,
       dataCreazione: new Date(),

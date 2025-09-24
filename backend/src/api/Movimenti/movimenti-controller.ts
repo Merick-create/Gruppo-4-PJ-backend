@@ -29,7 +29,7 @@ export const RicercaMov2 = async (
 ) => {
   try {
     const { n, categoria } = req.query;
-    const result = await getUltimiMovimentiByCategoria(Number(n), categoria);
+    const result = await getUltimiMovimentiByCategoria(Number(n), categoria, req.user?.id);
 
     if (!result.length) {
       throw new NotFoundError();
@@ -90,7 +90,6 @@ export const bonifico= async (req: Request, res: Response) => {
   try {
     const dto = req.body;
     const mittenteId = req.user?.id;
-    console.log(req.user?.id);
 
     const result = await eseguiBonifico(dto, mittenteId!, req.ip);
     res.status(200).json(result);
