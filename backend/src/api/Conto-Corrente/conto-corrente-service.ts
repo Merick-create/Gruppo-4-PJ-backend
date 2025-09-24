@@ -158,7 +158,7 @@ export class UserService {
     });
 
     await MovimentiModel.create({
-      ContoCorrenteId: user.user.iban,
+      ContoCorrenteId: user.id,
       dataCreazione: new Date(),
       importo: 0,
       saldo: 0,
