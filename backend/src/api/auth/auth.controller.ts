@@ -61,7 +61,7 @@ export const confirm = async (
   try {
     const email = req.body.username;
 
-    await userSrv.confirmMail(email);
+    await userSrv.confirmMail(email); 
     await logOperazione(
       req.ip,
       `Conferma apertura Conto Corrente per ${email}`,
