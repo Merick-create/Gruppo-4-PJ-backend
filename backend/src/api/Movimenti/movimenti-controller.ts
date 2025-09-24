@@ -113,10 +113,10 @@ export const ricarica= async (req: Request, res: Response) => {
 
 export const getSaldo = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { iban } = req.params;
-    if (!iban) res.status(400).json({ message: 'IBAN mancante' });
+    /*const { iban } = req.params;
+    if (!iban) res.status(400).json({ message: 'IBAN mancante' });*/
 
-    const saldo = await getSaldoConto(iban);
+    const saldo = await getSaldoConto(req.user?.id!);
 
     res.json({ saldo });
   } catch (error) {
