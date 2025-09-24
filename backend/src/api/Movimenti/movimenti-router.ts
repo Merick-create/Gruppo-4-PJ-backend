@@ -12,6 +12,6 @@ router.get('/ricerca',isAuthenticated, RicercaMov1);
 router.get('/categoria',isAuthenticated, RicercaMov2);
 router.get('/date',isAuthenticated, RicercaMov3);
 router.get('/export',isAuthenticated, exportMovimenti);
-router.get('/saldo/:iban',isAuthenticated, getSaldo);
+router.get('/saldo',isAuthenticated, getSaldo);
 
 export default router;  
