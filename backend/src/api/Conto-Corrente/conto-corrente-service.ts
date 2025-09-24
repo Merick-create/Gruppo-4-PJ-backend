@@ -157,6 +157,11 @@ export class UserService {
       Nome: "Apertura Conto",
     });
 
+    const check = await MovimentiModel.findOne({ContoCorrenteId: user.user.id, CategoriaMovimentoid: apertura});
+    if(check){
+      throw new Error("Conto già aperto");
+    }
+
     await MovimentiModel.create({
       ContoCorrenteId: user.user.id,
       dataCreazione: new Date(),
