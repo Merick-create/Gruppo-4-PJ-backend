@@ -158,10 +158,10 @@ export class UserService {
     });
 
     await MovimentiModel.create({
-      ContoCorrenteId: user.user.iban,
+      ContoCorrenteId: user.id,
       dataCreazione: new Date(),
-      importo: 0,
-      saldo: 0,
+      importo: 1000,
+      saldo: 1000,
       CategoriaMovimentoid: apertura,
       descrizione: "Apertura Conto Corrente",
     });
