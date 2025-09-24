@@ -192,7 +192,7 @@ export class UserService {
 Grazie per esserti registrato al nostro servizio di conto corrente.
 Per completare la registrazione, ti chiediamo di confermare il tuo indirizzo email cliccando sul link sottostante:
 
-[Inserisci qui il link di conferma]
+http://localhost:4200/conferma/${sendMail}
 
 Se non hai effettuato questa registrazione, ignora questa email.
 
@@ -203,7 +203,7 @@ Il Team Banca`,
 <p>Grazie per esserti registrato al nostro servizio di conto corrente.</p>
 <p>Per completare la registrazione, ti chiediamo di confermare il tuo indirizzo email cliccando sul pulsante sottostante:</p>
 <p style="text-align:center;">
-  <a href="[Inserisci qui il link di conferma]" style="display:inline-block; padding:10px 20px; color:#fff; background-color:#007bff; text-decoration:none; border-radius:5px;">Conferma Registrazione</a>
+  <a href="${sendMail}" style="display:inline-block; padding:10px 20px; color:#fff; background-color:#007bff; text-decoration:none; border-radius:5px;">Conferma Registrazione</a>
 </p>
 <p>Se non hai effettuato questa registrazione, puoi ignorare questa email.</p>
 <p>Cordiali saluti,<br><strong>Il Team Banca</strong></p>`,
