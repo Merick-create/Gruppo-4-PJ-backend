@@ -36,7 +36,8 @@ export const getUltimiMovimenti = async (n?: number,contoCorrenteid?:string) => 
   const limit = n && !isNaN(n) ? n : 5;
   const movimenti = await MovimentiModel.find({ContoCorrenteId:contoCorrenteid})
   .sort({ dataCreazione: -1 })
-  .limit(5)
+  .limit(limit)
+  .populate("CategoriaMovimentoid", "Nome")
   .lean(); 
 
   const saldo = await getSaldoConto(contoCorrenteid!);
@@ -54,6 +55,7 @@ export const getUltimiMovimentiByCategoria = async (n?: number, nomeCategoria?: 
   const movimenti = await MovimentiModel.find({ CategoriaMovimentoid: categoria._id, ContoCorrenteId: ccID})
     .sort({ dataCreazione: -1 })
     .limit(limit)
+    .populate("CategoriaMovimentoid", "Nome")
     .exec();
 
   return movimenti;
@@ -69,6 +71,7 @@ export const getUltimiMovimentiByDateRange = async (
   })
     .sort({ dataCreazione: -1 })
     .limit(limit)
+    .populate("CategoriaMovimentoid", "Nome")
     .exec();
 
   return movimenti;
