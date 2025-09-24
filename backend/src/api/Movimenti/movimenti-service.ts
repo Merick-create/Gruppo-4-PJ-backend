@@ -163,6 +163,25 @@ export async function eseguiRicarica(dto: RicaricaDto, ip?: string) {
     throw error;
   }
 }
+
+export async function getMovimentoById(id: string, ip?: string) {
+  try {
+    const movimento = await MovimentiModel.findById(id)
+      .populate("CategoriaMovimentoid", "Nome")
+      .lean();
+
+    if (!movimento) {
+      await logOperazione(ip, `Movimento con id ${id} non trovato`, false);
+      throw new Error(`Movimento con id ${id} non trovato`);
+    }
+
+    await logOperazione(ip, `Recuperato dettaglio movimento ${id}`, true);
+    return movimento;
+  } catch (error) {
+    await logOperazione(ip, `Errore durante recupero movimento ${id}: ${error}`, false);
+    throw error;
+  }
+}
 export async function logOperazione(
   ip: string | undefined,
   descrizione: string,

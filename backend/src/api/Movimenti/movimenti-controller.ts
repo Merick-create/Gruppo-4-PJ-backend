@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { getUltimiMovimenti, esportaMovimenti, getUltimiMovimentiByCategoria, getUltimiMovimentiByDateRange, getSaldoConto } from './movimenti-service';
+import { getUltimiMovimenti, esportaMovimenti, getUltimiMovimentiByCategoria, getUltimiMovimentiByDateRange, getSaldoConto, getMovimentoById } from './movimenti-service';
 import { QueryMovimentiDTO, QueryMovimentiCategoriaDTO, QueryMovimentiDateRangeDTO } from './movimenti-dto';
 import { TypedRequest } from '../../lib/typed-request-interface';
 import { NotFoundError } from '../../error/not-found-error';
@@ -122,6 +122,15 @@ export const getSaldo = async (req: Request, res: Response, next: NextFunction) 
   } catch (error) {
     console.error('Errore getSaldo:', error);
     next(error);
+  }
+};
+
+export const getMovimento = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const movimento = await getMovimentoById(req.params.id, req.ip);
+    res.json(movimento);
+  } catch (err) {
+    next(err);
   }
 };
 

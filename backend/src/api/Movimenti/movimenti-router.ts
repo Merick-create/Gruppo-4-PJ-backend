@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { bonifico,exportMovimenti,ricarica,RicercaMov1, RicercaMov2, RicercaMov3 } from "./movimenti-controller";
+import { bonifico,exportMovimenti,getMovimento,ricarica,RicercaMov1, RicercaMov2, RicercaMov3 } from "./movimenti-controller";
 import { BonificoDto } from "../Bonfico/bonifico-dto";
 import { isAuthenticated } from "../../lib/auth/auth.middleware";
 import { getSaldo } from "./movimenti-controller";
@@ -13,5 +13,6 @@ router.get('/categoria',isAuthenticated, RicercaMov2);
 router.get('/date',isAuthenticated, RicercaMov3);
 router.get('/export',isAuthenticated, exportMovimenti);
 router.get('/saldo',isAuthenticated, getSaldo);
+router.get('/:id', isAuthenticated, getMovimento);
 
 export default router;  
