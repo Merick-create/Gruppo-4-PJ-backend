@@ -160,8 +160,8 @@ export class UserService {
     await MovimentiModel.create({
       ContoCorrenteId: user.user.id,
       dataCreazione: new Date(),
-      importo: 1000,
-      saldo: 1000,
+      importo: 0,
+      saldo: 0,
       CategoriaMovimentoid: apertura,
       descrizione: "Apertura Conto Corrente",
     });
