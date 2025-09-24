@@ -52,7 +52,8 @@ export const RicercaMov3 = async (
     const result = await getUltimiMovimentiByDateRange(
       Number(n),
       new Date(dataInizio),
-      new Date(dataFine)
+      new Date(dataFine),
+      req.user?.id
     );
 
     if (!result.length) {

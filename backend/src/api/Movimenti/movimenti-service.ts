@@ -63,11 +63,12 @@ export const getUltimiMovimentiByCategoria = async (n?: number, nomeCategoria?: 
 export const getUltimiMovimentiByDateRange = async (
   n?: number,
   dataInizio?: Date,
-  dataFine?: Date
+  dataFine?: Date, 
+  ccID?: string
 ) => {
   const limit = n && !isNaN(n) ? n : 5;
   const movimenti = await MovimentiModel.find({
-    dataCreazione: { $gte: dataInizio, $lte: dataFine },
+    dataCreazione: { $gte: dataInizio, $lte: dataFine }, ContoCorrenteId: ccID
   })
     .sort({ dataCreazione: -1 })
     .limit(limit)
