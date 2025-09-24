@@ -39,7 +39,8 @@ export const getUltimiMovimenti = async (n?: number,contoCorrenteid?:string) => 
   .limit(5)
   .lean(); 
 
-  const saldo = movimenti.reduce((tot, m) => tot + m.importo, 0);
+  const saldo = await getSaldoConto(contoCorrenteid!);
+  //const saldo = movimenti.reduce((tot, m) => tot + m.importo, 0);
 
   return { movimenti, saldo };
 };
