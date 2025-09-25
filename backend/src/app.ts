@@ -7,6 +7,7 @@ import { errorHandlers } from "./error";
 import "./lib/auth/auth.handlers"
 
 const app = express();
+app.set('trust proxy', true); // trust first proxy
 
 const allowedOrigins = [
   'http://localhost:4200', // Angular dev server
@@ -25,7 +26,6 @@ app.use(cors({
   },
   credentials: true // if you need to send cookies/auth headers
 }));
-
 app.use(cors());
 app.use(morgan('tiny'));
 app.use(bodyParser.json());
