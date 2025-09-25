@@ -56,6 +56,7 @@ export const getUltimiMovimentiByCategoria = async (n?: number, nomeCategoria?: 
     .sort({ dataCreazione: -1 })
     .limit(limit)
     .populate("CategoriaMovimentoid", "Nome")
+    .populate("ContoCorrenteId")
     .exec();
 
   return movimenti;
