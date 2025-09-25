@@ -192,7 +192,7 @@ export class UserService {
 Grazie per esserti registrato al nostro servizio di conto corrente.
 Per completare la registrazione, ti chiediamo di confermare il tuo indirizzo email cliccando sul link sottostante:
 
-http://localhost:4200/conferma/${sendMail}
+https://gruppo-4-pj-frontend.onrender.com/conferma/${sendMail}
 
 Se non hai effettuato questa registrazione, ignora questa email.
 
