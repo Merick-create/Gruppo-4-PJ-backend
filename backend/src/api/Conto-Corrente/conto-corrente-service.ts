@@ -203,7 +203,7 @@ Il Team Banca`,
 <p>Grazie per esserti registrato al nostro servizio di conto corrente.</p>
 <p>Per completare la registrazione, ti chiediamo di confermare il tuo indirizzo email cliccando sul pulsante sottostante:</p>
 <p style="text-align:center;">
-  <a href="http://localhost:4200/conferma/${sendMail}" style="display:inline-block; padding:10px 20px; color:#fff; background-color:#007bff; text-decoration:none; border-radius:5px;">Conferma Registrazione</a>
+  <a href="https://gruppo-4-pj-frontend.onrender.com/conferma/${sendMail}" style="display:inline-block; padding:10px 20px; color:#fff; background-color:#007bff; text-decoration:none; border-radius:5px;">Conferma Registrazione</a>
 </p>
 <p>Se non hai effettuato questa registrazione, puoi ignorare questa email.</p>
 <p>Cordiali saluti,<br><strong>Il Team Banca</strong></p>`,
